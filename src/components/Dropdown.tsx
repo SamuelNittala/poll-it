@@ -8,19 +8,19 @@ export const Dropdown = ({ options }: { options: DropDownOptionsType }) => {
   const { label, placeholder } = useDescription();
   const id = useId();
   return (
-    <div className="w-full">
-      <label className="font-mono p-2 ml-3 mt-4 text-sm"> {label} </label>
+    <div className="w-full m-3">
+      <label className="font-mono p-2 text-sm"> {label} </label>
       <br />
       <select
-        className="m-2 p-2"
+        className="mt-2 p-2 rounded-md w-1/2"
         value={field.value ? field.value : "none"}
         onChange={(e) => {
           field.onChange(e.target.value);
         }}
       >
-        {!field.value && <option value="none">Select an option</option>}
+        {!field.value && <option value="none" className="p-2 m-2">Select an option</option>}
         {options.map((e, i) => (
-          <option key={id + "-" + i} value={e.value} className="p-2">
+          <option key={id + "-" + i} value={e.value} className="p-2 m-2">
             {e.label}
           </option>
         ))}

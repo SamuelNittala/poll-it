@@ -12,12 +12,12 @@ export const CreatePoll = () => {
     console.log(data, "data");
   };
   return (
-    <div className="bg-gray-400 p-5 mt-5 ml-auto mr-auto w-1/2">
+    <div className="bg-gray-400 p-5 mt-5 ml-auto mr-auto w-1/2 rounded-md">
       <PollForm
         schema={PollFormSchema}
         onSubmit={handleSubmit}
         renderAfter={() => (
-          <button type="submit" className="bg-red-300 p-2 m-2 align-middle">
+          <button type="submit" className="bg-red-300 p-2 m-2 align-middle hover:text-green-500 rounded-md">
             Submit
           </button>
         )}
