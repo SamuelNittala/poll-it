@@ -1,4 +1,5 @@
 import { useDescription, useTsController } from "@ts-react/form";
+import { Error } from "./Error";
 import React from "react";
 
 type TextFieldProps = {
@@ -20,7 +21,7 @@ export const TextField = ({ type = "text" }: TextFieldProps) => {
         className="mt-2 p-2 rounded-md default:text-gray-50 w-3/4"
       />
       {error?.errorMessage && (
-        <span style={{ color: "red" }}>{error?.errorMessage}</span>
+        <Error message={error?.errorMessage} />
       )}
     </div>
   );

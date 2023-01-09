@@ -1,4 +1,5 @@
 import { useDescription, useTsController } from "@ts-react/form";
+import { Error } from "./Error";
 import React, { useId } from "react";
 
 type DropDownOptionsType = Array<{ value: string; label: string }>;
@@ -18,16 +19,18 @@ export const Dropdown = ({ options }: { options: DropDownOptionsType }) => {
           field.onChange(e.target.value);
         }}
       >
-        {!field.value && <option value="none" className="p-2 m-2">Select an option</option>}
+        {!field.value && (
+          <option value="none" className="p-2 m-2">
+            Select an option
+          </option>
+        )}
         {options.map((e, i) => (
           <option key={id + "-" + i} value={e.value} className="p-2 m-2">
             {e.label}
           </option>
         ))}
       </select>
-      <span className="text-red-500 p-2">
-        {error?.errorMessage && error.errorMessage}
-      </span>
+      <Error message={error?.errorMessage} />
       <br />
     </div>
   );
