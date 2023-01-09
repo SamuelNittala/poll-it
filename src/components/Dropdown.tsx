@@ -25,7 +25,7 @@ export const Dropdown = ({ options }: { options: DropDownOptionsType }) => {
           </option>
         ))}
       </select>
-      <span className="text-red-500">
+      <span className="text-red-500 p-2">
         {error?.errorMessage && error.errorMessage}
       </span>
       <br />

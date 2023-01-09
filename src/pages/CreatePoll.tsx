@@ -3,7 +3,10 @@ import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
 
 const PollFormSchema = z.object({
-  title: z.string().describe("Title // enter title"),
+  title: z
+    .string()
+    .min(10, "Minimum 10 characters")
+    .describe("Title // enter title"),
   votingType: DropDownSchema("Voting Type"),
 });
 
@@ -17,7 +20,10 @@ export const CreatePoll = () => {
         schema={PollFormSchema}
         onSubmit={handleSubmit}
         renderAfter={() => (
-          <button type="submit" className="bg-red-300 p-2 m-2 align-middle hover:text-green-500 rounded-md">
+          <button
+            type="submit"
+            className="bg-red-300 p-2 m-2 align-middle hover:text-green-500 rounded-md"
+          >
             Submit
           </button>
         )}
