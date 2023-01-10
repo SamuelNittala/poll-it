@@ -1,23 +1,87 @@
 import React from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
+import { ToggleTextSchema } from "../form/uniqueSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+type FieldProperties<T> = {
+  visible: boolean;
+  zodValue: any;
+  key: keyof T;
+};
+
+const ConstructSchema = <T extends Record<string, any>>(
+  fields: Array<FieldProperties<T>>
+) => {
+  const _res = fields
+    .filter((field) => field.visible)
+    .reduce((acc, field) => {
+      const { key, zodValue } = field;
+      acc[key] = zodValue();
+      return acc;
+    }, {} as T);
+  return z.object(_res) as any;
+};
+
+// default schema with all the values.
 const PollFormSchema = z.object({
   title: z
     .string()
     .min(10, "Minimum 10 characters")
     .describe("Title // enter title"),
+  showDescription: ToggleTextSchema("Show Description // Hide Description"),
+  description: z.string().optional().describe("Description (optional)"),
   votingType: DropDownSchema("Voting Type"),
 });
 
+type PollFormFieldValues = z.infer<typeof PollFormSchema>;
+
 export const CreatePoll = () => {
-  const handleSubmit = (data: z.infer<typeof PollFormSchema>) => {
+  const form = useForm<PollFormFieldValues>({
+    resolver: zodResolver(PollFormSchema),
+  });
+
+  const showDescription = form.watch("showDescription");
+
+  const PollFormFields: FieldProperties<PollFormFieldValues>[] = [
+    {
+      key: "title",
+      visible: true,
+      zodValue: () =>
+        z
+          .string()
+          .min(10, "Minimum 10 characters")
+          .describe("Title // enter title"),
+    },
+    {
+      key: "showDescription",
+      visible: true,
+      zodValue: () => ToggleTextSchema("Show Description // Hide Description"),
+    },
+    {
+      key: "description",
+      visible: showDescription,
+      zodValue: () => z.string().optional().describe("Description (optional)"),
+    },
+    {
+      key: "votingType",
+      visible: true,
+      zodValue: () => DropDownSchema("Voting Type"),
+    },
+  ];
+
+  const RefinedSchema = ConstructSchema(PollFormFields);
+
+  const handleSubmit = (data: PollFormFieldValues) => {
     console.log(data, "data");
   };
+
   return (
-    <div className="bg-gray-400 p-5 mt-5 ml-auto mr-auto w-1/2 rounded-md">
+    <div className="bg-gray-200 p-5 mt-5 ml-auto mr-auto w-1/2 rounded-md">
       <PollForm
-        schema={PollFormSchema}
+        schema={RefinedSchema}
+        form={form}
         onSubmit={handleSubmit}
         renderAfter={() => (
           <button

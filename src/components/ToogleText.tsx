@@ -4,7 +4,6 @@ import React from "react";
 export const ToogleText = () => {
   const { field } = useTsController<boolean>();
   const { label, placeholder } = useDescription();
-  console.log(field.value);
   return (
     <div className="w-full m-3">
       <a
