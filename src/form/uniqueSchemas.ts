@@ -10,3 +10,8 @@ export const ToggleTextSchema = (label) => createUniqueFieldSchema(
   z.boolean().describe(`${label}`),
   "toggleText"
 );
+
+export const OptionsSchema = (label) => createUniqueFieldSchema(
+  z.string().describe(`${label}`),
+  "optionsField"
+)

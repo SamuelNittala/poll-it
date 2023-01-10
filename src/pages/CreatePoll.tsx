@@ -2,8 +2,9 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
-import { ToggleTextSchema } from "../form/uniqueSchemas";
+import { OptionsSchema, ToggleTextSchema } from "../form/uniqueSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Options } from "../components";
 
 type FieldProperties<T> = {
   visible: boolean;
@@ -33,6 +34,7 @@ const PollFormSchema = z.object({
   showDescription: ToggleTextSchema("Show Description // Hide Description"),
   description: z.string().optional().describe("Description (optional)"),
   votingType: DropDownSchema("Voting Type"),
+  options: OptionsSchema("Answer Options")
 });
 
 type PollFormFieldValues = z.infer<typeof PollFormSchema>;
@@ -69,6 +71,11 @@ export const CreatePoll = () => {
       visible: true,
       zodValue: () => DropDownSchema("Voting Type"),
     },
+    {
+      key: "options",
+      visible: true,
+      zodValue: () => OptionsSchema("Answer Options")
+    }
   ];
 
   const RefinedSchema = ConstructSchema(PollFormFields);
@@ -99,6 +106,9 @@ export const CreatePoll = () => {
               { label: "Meeting Poll", value: "meeting" },
             ],
           },
+          options: {
+            answers: ['afa', 'aaba'] 
+          } 
         }}
       />
     </div>
