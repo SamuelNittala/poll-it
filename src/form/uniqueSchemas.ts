@@ -7,11 +7,16 @@ export const DropDownSchema = (label) => createUniqueFieldSchema(
 );
 
 export const ToggleTextSchema = (label) => createUniqueFieldSchema(
-  z.boolean().describe(`${label}`),
+  z.boolean().optional().describe(`${label}`),
   "toggleText"
 );
 
 export const OptionsSchema = (label) => createUniqueFieldSchema(
-  z.string().describe(`${label}`),
+  z.string().array().optional().describe(`${label}`),
   "optionsField"
+)
+
+export const AddButtonSchema = (label) => createUniqueFieldSchema(
+  z.boolean().optional().describe(`${label}`),
+  "addButtonField"
 )

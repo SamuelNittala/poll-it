@@ -1,4 +1,4 @@
-import { useTsController } from "@ts-react/form";
+import { useDescription, useTsController } from "@ts-react/form";
 import React from "react";
 
 const Option = ({
@@ -32,8 +32,10 @@ const Option = ({
 };
 
 export const Options = ({ answers }: { answers: string[] }) => {
+  const { label } = useDescription();
   return (
     <div className="m-3 w-full">
+      <label className="font-mono p-2 text-sm"> {label} </label> <br />
       {answers.map((answer, i) => (
         <Option label={answer} index={i} key={i} />
       ))}

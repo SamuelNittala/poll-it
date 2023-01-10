@@ -2,9 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
-import { OptionsSchema, ToggleTextSchema } from "../form/uniqueSchemas";
+import { AddButtonSchema, OptionsSchema, ToggleTextSchema } from "../form/uniqueSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Options } from "../components";
 
 type FieldProperties<T> = {
   visible: boolean;
@@ -34,7 +33,8 @@ const PollFormSchema = z.object({
   showDescription: ToggleTextSchema("Show Description // Hide Description"),
   description: z.string().optional().describe("Description (optional)"),
   votingType: DropDownSchema("Voting Type"),
-  options: OptionsSchema("Answer Options")
+  options: OptionsSchema("Answer Options"),
+  addButton: AddButtonSchema("Add Answer"),
 });
 
 type PollFormFieldValues = z.infer<typeof PollFormSchema>;
@@ -43,6 +43,12 @@ export const CreatePoll = () => {
   const form = useForm<PollFormFieldValues>({
     resolver: zodResolver(PollFormSchema),
   });
+
+  const [answers, setAnswers] = React.useState(['', '']);
+
+  const addAnswer = React.useCallback(() => {
+    setAnswers(prev => [...prev, '']);
+  }, []);
 
   const showDescription = form.watch("showDescription");
 
@@ -75,10 +81,17 @@ export const CreatePoll = () => {
       key: "options",
       visible: true,
       zodValue: () => OptionsSchema("Answer Options")
+    },
+    {
+      key: "addButton",
+      visible: true,
+      zodValue: () => AddButtonSchema("Add Answer"),
     }
   ];
 
   const RefinedSchema = ConstructSchema(PollFormFields);
+
+  console.log(RefinedSchema, 'rarar');
 
   const handleSubmit = (data: PollFormFieldValues) => {
     console.log(data, "data");
@@ -107,7 +120,10 @@ export const CreatePoll = () => {
             ],
           },
           options: {
-            answers: ['afa', 'aaba'] 
+            answers: answers,
+          },
+          addButton: {
+            addAnswer: addAnswer,
           } 
         }}
       />

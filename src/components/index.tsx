@@ -4,3 +4,4 @@ export { TextField } from "./TextField";
 export { Dropdown } from "./Dropdown";
 export { ToogleText } from "./ToogleText";
 export { Options } from "./Options";
+export { AddButton } from "./AddButton";
