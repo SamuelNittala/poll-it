@@ -33,7 +33,7 @@ const PollFormSchema = z.object({
   showDescription: ToggleTextSchema("Show Description // Hide Description"),
   description: z.string().optional().describe("Description (optional)"),
   votingType: DropDownSchema("Voting Type"),
-  options: OptionsSchema("Answer Options"),
+  options: OptionsSchema("Answer Options // your option"),
   addButton: AddButtonSchema("Add Answer"),
 });
 
@@ -44,10 +44,10 @@ export const CreatePoll = () => {
     resolver: zodResolver(PollFormSchema),
   });
 
-  const [answers, setAnswers] = React.useState(['', '']);
+  const [answers, setAnswers] = React.useState(['Answer-1', 'Answer-2']);
 
   const addAnswer = React.useCallback(() => {
-    setAnswers(prev => [...prev, '']);
+    setAnswers(prev => [...prev, `Answer-${prev.length + 1}`]);
   }, []);
 
   const showDescription = form.watch("showDescription");
@@ -80,7 +80,7 @@ export const CreatePoll = () => {
     {
       key: "options",
       visible: true,
-      zodValue: () => OptionsSchema("Answer Options")
+      zodValue: () => OptionsSchema("Answer Options // your option")
     },
     {
       key: "addButton",
@@ -121,6 +121,7 @@ export const CreatePoll = () => {
           },
           options: {
             answers: answers,
+            setAnswers: setAnswers,
           },
           addButton: {
             addAnswer: addAnswer,
