@@ -14,7 +14,7 @@ export const TextField = ({ type = "text" }: TextFieldProps) => {
       <label className="font-mono p-2 text-sm"> {label} </label> <br />
       <input
         type={type}
-        value={field.value ? field.value : placeholder}
+        defaultValue={placeholder}
         onChange={(e) => {
           field.onChange(e.target.value);
         }}
