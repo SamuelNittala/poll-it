@@ -5,3 +5,8 @@ export const DropDownSchema = (label) => createUniqueFieldSchema(
   z.string().describe(`${label}`),
   "dropDownField"
 );
+
+export const ToggleTextSchema = (label) => createUniqueFieldSchema(
+  z.boolean().describe(`${label}`),
+  "toggleText"
+);
