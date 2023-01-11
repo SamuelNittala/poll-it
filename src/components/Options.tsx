@@ -1,10 +1,8 @@
 import * as React from "react";
 import { Error } from "./Error";
-import { useDescription, useTsController } from "@ts-react/form";
-import { FieldError, FieldErrorsImpl, Merge, useForm } from "react-hook-form";
+import { useTsController } from "@ts-react/form";
 
 const Option = ({
-  label,
   index,
   setAnswers,
   errorMessage,
@@ -16,14 +14,11 @@ const Option = ({
   errorMessage: string;
 }) => {
   const {
-    field: { value, onChange },
-    error,
+    field: { value = [], onChange },
   } = useTsController<string[]>();
 
-  const { placeholder } = useDescription();
-
   const deleteAnswer = () => {
-    const _updatedAnswers = value.filter((field, i) => i !== index);
+    const _updatedAnswers = value.filter((_, i) => i !== index);
     onChange(_updatedAnswers);
     setAnswers(_updatedAnswers);
   };
@@ -64,13 +59,13 @@ export const Options = ({
   label: string;
 }) => {
   const {
-    field: { value, onChange },
-    error,
+    field: { onChange },
   } = useTsController<string[]>();
 
   React.useEffect(() => {
     onChange(answers);
   }, [answers]);
+
   return (
     <div className="m-3 w-full">
       <label className="font-mono p-2 text-sm"> {label} </label> <br />

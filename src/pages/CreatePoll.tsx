@@ -2,103 +2,132 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
-import { AddButtonSchema, OptionsSchema, ToggleTextSchema } from "../form/uniqueSchemas";
+import {
+  AddButtonSchema,
+  OptionsSchema,
+  ToggleTextSchema,
+} from "../form/uniqueSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-type FieldProperties<T> = {
-  visible: boolean;
-  zodValue: any;
-  key: keyof T;
+type PollFormValues = {
+  showDescription: boolean;
+  description?: string;
+  title: string;
+  votingType: string;
+  options: Array<string>;
+  addButton: string;
 };
 
-const ConstructSchema = <T extends Record<string, any>>(
-  fields: Array<FieldProperties<T>>
+type DependencyFieldType<T> = {
+  field: keyof T;
+  filters: Array<boolean>;
+};
+
+const getFilteredSchema = <T extends Record<string, any>>(
+  fields: Array<DependencyFieldType<T>>
 ) => {
-  const _res = fields
-    .filter((field) => field.visible)
-    .reduce((acc, field) => {
-      const { key, zodValue } = field;
-      acc[key] = zodValue();
-      return acc;
-    }, {} as T);
-  return z.object(_res) as any;
+  const fieldsToHide = [];
+  for (let i = 0; i < fields.length; ++i) {
+    //if all filters does not pass, push to hide
+    if (!fields[i].filters.every((filter) => filter)) {
+      fieldsToHide.push(fields[i].field);
+    }
+  }
+  return fieldsToHide;
 };
 
-// default schema with all the values.
-export const PollFormSchema = z.object({
+const getSchema = <T extends object, K extends object>(
+  filtersArray: Array<DependencyFieldType<T>>,
+  fullSchema: K & { [key: string]: any }
+): K => {
+  const fieldsToHide = getFilteredSchema(filtersArray);
+  const _res = Object.keys(fullSchema)
+    .filter((field) => !fieldsToHide.includes(field))
+    .reduce((acc, field) => {
+      acc[field] = fullSchema[field];
+      return acc;
+    }, {} as any) as K;
+  return _res as K;
+};
+
+const fullSchema = {
   title: z
     .string()
     .min(5, "Minimum 5 characters")
     .describe("Title // enter title"),
   showDescription: ToggleTextSchema("Show Description // Hide Description"),
-  description: z.string().optional().describe("Description (optional)"),
+  description: z
+    .string()
+    .min(5, "Minimum 5 characters")
+    .optional()
+    .describe("Description (optional)"),
   votingType: DropDownSchema("Voting Type"),
   options: OptionsSchema("Answer Options // your option"),
   addButton: AddButtonSchema("Add Answer"),
-});
+};
 
-export type PollFormFieldValues = z.infer<typeof PollFormSchema>;
+export const PollFormSchema = <T extends Record<string, any>>(
+  filtersArray: Array<DependencyFieldType<T>> | []
+) => {
+  const fullSchema = {
+    title: z
+      .string()
+      .min(5, "Minimum 5 characters")
+      .describe("Title // enter title"),
+    showDescription: ToggleTextSchema("Show Description // Hide Description"),
+    description: z
+      .string()
+      .min(5, "Minimum 5 characters")
+      .optional()
+      .describe("Description (optional)"),
+    votingType: DropDownSchema("Voting Type"),
+    options: OptionsSchema("Answer Options // your option"),
+    addButton: AddButtonSchema("Add Answer"),
+  };
+  const constructedSchema = getSchema(
+    filtersArray,
+    fullSchema
+  ) as typeof fullSchema;
+
+  return z.object(constructedSchema);
+};
+
+type PollFormFieldValues = z.infer<ReturnType<typeof PollFormSchema>>;
+
+const _pollSchema = z.object(fullSchema);
 
 export const CreatePoll = () => {
-  const [answers, setAnswers] = React.useState(['', '']);
-
-  const form = useForm<PollFormFieldValues>({
-    resolver: zodResolver(PollFormSchema),
-  });
-
-  const showDescription = form.watch("showDescription") || false;
-
+  const [answers, setAnswers] = React.useState(["", ""]);
   const addAnswer = React.useCallback(() => {
-    setAnswers(prev => [...prev, 'x']);
+    setAnswers((prev) => [...prev, ""]);
   }, []);
 
-  const PollFormFields: FieldProperties<PollFormFieldValues>[] = [
-    {
-      key: "title",
-      visible: true,
-      zodValue: () =>
-        z
-          .string()
-          .min(10, "Minimum 10 characters")
-          .describe("Title // enter title"),
-    },
-    {
-      key: "showDescription",
-      visible: true,
-      zodValue: () => ToggleTextSchema("Show Description // Hide Description"),
-    },
-    {
-      key: "description",
-      visible: showDescription,
-      zodValue: () => z.string().optional().describe("Description (optional)"),
-    },
-    {
-      key: "votingType",
-      visible: true,
-      zodValue: () => DropDownSchema("Voting Type"),
-    },
-    {
-      key: "options",
-      visible: true,
-      zodValue: () => OptionsSchema("Answer Options // your option"),
-    },
-    {
-      key: "addButton",
-      visible: true,
-      zodValue: () => AddButtonSchema("Add Answer"),
-    }
-  ];
+  const form = useForm<PollFormFieldValues>({
+    resolver: zodResolver(PollFormSchema([])),
+  });
 
-  const RefinedSchema = ConstructSchema(PollFormFields);
+  const showDescription = form.watch("showDescription");
+  const options = form.watch("votingType");
 
   const handleSubmit = (data: PollFormFieldValues) => {
     console.log(data, "data");
   };
 
+  const dependencies: Array<DependencyFieldType<PollFormValues>> = [
+    {
+      field: "description",
+      filters: [showDescription],
+    },
+    {
+      field: "options",
+      filters: [options === "multi"],
+    },
+  ];
+
   return (
     <div className="bg-gray-200 p-5 mt-5 ml-auto mr-auto sm:w-full md:w-1/2 rounded-md">
       <PollForm
-        schema={RefinedSchema}
+        schema={PollFormSchema(dependencies)}
         form={form}
         onSubmit={handleSubmit}
         renderAfter={() => (
@@ -120,13 +149,13 @@ export const CreatePoll = () => {
           options: {
             answers: answers,
             setAnswers: setAnswers,
-            errors: form.formState.errors['options'],
+            errors: form.formState.errors?.["options"],
             label: "Your answers",
           },
           addButton: {
             addAnswer: addAnswer,
-            label: 'Add Answer',
-          } 
+            label: "Add Answer",
+          },
         }}
       />
     </div>
