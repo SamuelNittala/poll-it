@@ -9,15 +9,6 @@ import {
 } from "../form/uniqueSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-type PollFormValues = {
-  showDescription: boolean;
-  description?: string;
-  title: string;
-  votingType: string;
-  options: Array<string>;
-  addButton: string;
-};
-
 const fullSchema = {
   title: z
     .string()
@@ -56,7 +47,7 @@ export const CreatePoll = () => {
     console.log(data, "data");
   };
 
-  const dependencies: Array<DependencyFieldType<PollFormValues>> = [
+  const dependencies: Array<DependencyFieldType<PollFormFieldValues>> = [
     {
       field: "description",
       filters: [showDescription],
