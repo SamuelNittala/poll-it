@@ -2,7 +2,11 @@
   "name": "package-based",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:frontend": "nx dev frontend",
+    "build:backend": "nx build:watch backend",
+    "start:backend": "nx watch backend"
+  },
   "private": true,
   "devDependencies": {
     "@nrwl/nx-cloud": "latest",

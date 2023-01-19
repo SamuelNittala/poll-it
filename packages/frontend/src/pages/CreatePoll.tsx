@@ -2,7 +2,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { DropDownSchema, PollForm } from "../form";
-import { AddButtonSchema, OptionsSchema, ToggleTextSchema } from "../form/uniqueSchemas";
+import {
+  AddButtonSchema,
+  OptionsSchema,
+  ToggleTextSchema,
+} from "../form/uniqueSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type FieldProperties<T> = {
@@ -40,7 +44,7 @@ export const PollFormSchema = z.object({
 export type PollFormFieldValues = z.infer<typeof PollFormSchema>;
 
 export const CreatePoll = () => {
-  const [answers, setAnswers] = React.useState(['', '']);
+  const [answers, setAnswers] = React.useState(["", ""]);
 
   const form = useForm<PollFormFieldValues>({
     resolver: zodResolver(PollFormSchema),
@@ -49,7 +53,7 @@ export const CreatePoll = () => {
   const showDescription = form.watch("showDescription") || false;
 
   const addAnswer = React.useCallback(() => {
-    setAnswers(prev => [...prev, 'x']);
+    setAnswers((prev) => [...prev, "x"]);
   }, []);
 
   const PollFormFields: FieldProperties<PollFormFieldValues>[] = [
@@ -86,13 +90,22 @@ export const CreatePoll = () => {
       key: "addButton",
       visible: true,
       zodValue: () => AddButtonSchema("Add Answer"),
-    }
+    },
   ];
 
   const RefinedSchema = ConstructSchema(PollFormFields);
 
   const handleSubmit = (data: PollFormFieldValues) => {
-    console.log(data, "data");
+    console.log(JSON.stringify(data));
+    fetch("http://localhost:3001/create-poll", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((res) => res.json())
+      .then((json) => console.log(json));
   };
 
   return (
@@ -120,13 +133,13 @@ export const CreatePoll = () => {
           options: {
             answers: answers,
             setAnswers: setAnswers,
-            errors: form.formState.errors['options'],
+            errors: form.formState.errors["options"],
             label: "Your answers",
           },
           addButton: {
             addAnswer: addAnswer,
-            label: 'Add Answer',
-          } 
+            label: "Add Answer",
+          },
         }}
       />
     </div>

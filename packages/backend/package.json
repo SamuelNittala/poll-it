@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
+    "watch": "nodemon build/src/main.js",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
@@ -31,7 +32,9 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
+    "sqlite3": "^5.1.4",
     "tslib": "~2.4"
   },
   "volta": {
