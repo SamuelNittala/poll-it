@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VOTING_TYPE {
+  MULTIPLE_ANSWERS
+  IMAGES
+  CALENDAR
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  username String @unique
+  password String @db.VarChar(100)
+  polls    Poll[]
+}
+
+model Poll {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  title      String      @unique @db.VarChar(255)
+  votingType VOTING_TYPE @default(MULTIPLE_ANSWERS)
+  createdBy  User        @relation(fields: [userId], references: [id])
+  userId     String
+  answers    String[]
+}
